@@ -101,13 +101,44 @@
         }
 
         .arrow {
-            display: none;
+            position: fixed;
+            bottom: 5%;
+            /* transform: translateY(-50%); */
+            background: none;
+            border: none;
+            font-size: 1rem;
+            color: black;
+            cursor: pointer;
+            padding: 1rem;
+            transition: color 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .arrow:hover:not(:disabled) {
+            color: #000;
+        }
+
+        .arrow:active:not(:disabled) {
+            color: #000;
+        }
+
+        .arrow:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .arrow.prev {
+            left: 1rem;
+        }
+
+        .arrow.next {
+            right: 1rem;
         }
 
         .counter {
             position: fixed;
             bottom: 2rem;
-            left: 2rem;
+            right: 2rem;
             font-size: 0.75rem;
         }
 
@@ -155,7 +186,7 @@
 
     <button class="arrow prev">←</button>
     <button class="arrow next">→</button>
-    <div class="counter">1 / 13</div>
+    <div class="counter"></div>
 
     <script>
         const projects = {
