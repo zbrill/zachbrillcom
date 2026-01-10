@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zach brill com</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            color: #333;
+            background: #fff;
+        }
+
+        header {
+            padding: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        nav a {
+            margin-right: 1.5rem;
+            color: #999;
+            text-decoration: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        nav a.active {
+            color: #000;
+        }
+
+        .project-view {
+            display: none;
+            padding: 2rem;
+        }
+
+        .project-view.active {
+            display: block;
+        }
+
+        .image-viewer {
+            position: relative;
+        }
+
+        .image-container {
+            width: 50%;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .image-placeholder {
+            color: #ccc;
+            font-size: 0.85rem;
+            padding-left: 2rem;
+        }
+
+        /* .arrow {
+            position: fixed;
+            top: 60%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #ccc;
+            cursor: pointer;
+            padding: 1rem;
+            transition: color 0.3s;
+        } */
+
+        .arrow:hover:not(:disabled) {
+            color: #000;
+        }
+
+        .arrow:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .arrow.prev {
+            left: 1rem;
+            opacity: 0;
+        }
+
+        .arrow.next {
+            right: 1rem;
+            opacity: 0;
+        }
+
+        .counter {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>you are here</h1>
+        <nav>
+            <a class="project-link active" data-project="project1">untitled (sauvie)</a>
+            <a class="project-link" data-project="project2">untitled (desert)</a>
+        </nav>
+    </header>
+
+    <div class="project-view active" id="project1">
+        <div class="image-viewer">
+            <div class="image-container">
+                <div class="image-placeholder">Image 1 of 4</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="project-view" id="project2">
+        <div class="image-viewer">
+            <div class="image-container">
+                <div class="image-placeholder">Image 1 of 3</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="project-view" id="project3">
+        <div class="image-viewer">
+            <div class="image-container">
+                <div class="image-placeholder">Image 1 of 5</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="arrow prev">←</button>
+    <button class="arrow next">→</button>
+    <div class="counter">1 / 4</div>
+
+    <script>
+        const projects = {
+            project1: {
+                images: ['./img/sauvie/IMG_3886.png', './img/sauvie/IMG_3640.png', './img/sauvie/IMG_3897.png',  './img/sauvie/IMG_3876.png',
+                    './img/sauvie/IMG_3846.png', './img/sauvie/IMG_3746.png', './img/sauvie/IMG_3881.png', './img/sauvie/IMG_3211.png', './img/sauvie/IMG_3906.png',
+                    './img/sauvie/IMG_3875.png', './img/sauvie/IMG_3892.png', './img/sauvie/IMG_3883.png', './img/sauvie/IMG_3334-2.png'
+                ],
+                current: 0
+            },
+            project2: {
+                images: ['./img/desert/IMG_3920.png', './img/desert/IMG_3927.png', './img/desert/IMG_3918.png', './img/desert/IMG_3943.png'],
+                current: 0
+            },
+            project3: {
+                images: ['image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.jpg', 'image5.jpg'],
+                current: 0
+            }
+        };
+
+        let activeProject = 'project1';
+
+        const prevArrow = document.querySelector('.arrow.prev');
+        const nextArrow = document.querySelector('.arrow.next');
+        const counter = document.querySelector('.counter');
+
+        function updateImage() {
+            const project = projects[activeProject];
+            const container = document.querySelector(`#${activeProject} .image-container`);
+
+            container.innerHTML = `<img src="${project.images[project.current]}" alt="Image ${project.current + 1}">`;
+            counter.textContent = `${project.current + 1} / ${project.images.length}`;
+
+            prevArrow.disabled = project.current === 0;
+            nextArrow.disabled = project.current === project.images.length - 1;
+        }
+
+        function navigate(direction) {
+            const project = projects[activeProject];
+            if (direction === 'next' && project.current < project.images.length - 1) {
+                project.current++;
+            } else if (direction === 'prev' && project.current > 0) {
+                project.current--;
+            }
+            updateImage();
+        }
+
+        document.querySelectorAll('.project-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const projectId = link.dataset.project;
+
+                document.querySelectorAll('.project-view').forEach(p => p.classList.remove('active'));
+                document.querySelectorAll('.project-link').forEach(l => l.classList.remove('active'));
+
+                document.getElementById(projectId).classList.add('active');
+                link.classList.add('active');
+
+                activeProject = projectId;
+                updateImage();
+            });
+        });
+
+        prevArrow.addEventListener('click', () => navigate('prev'));
+        nextArrow.addEventListener('click', () => navigate('next'));
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') navigate('next');
+            else if (e.key === 'ArrowLeft') navigate('prev');
+        });
+
+        updateImage();
+    </script>
+</body>
+</html>
