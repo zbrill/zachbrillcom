@@ -160,6 +160,7 @@
         <nav>
             <a class="project-link active" data-project="project1">untitled (sauvie)</a>
             <a class="project-link" data-project="project2">untitled (desert)</a>
+            <a class="project-link" data-project="project3">music</a>
         </nav>
     </header>
 
@@ -180,11 +181,7 @@
     </div>
 
     <div class="project-view" id="project3">
-        <div class="image-viewer">
-            <div class="image-container">
-                <div class="image-placeholder">Image 1 of 5</div>
-            </div>
-        </div>
+        <iframe style="border: 0; width: 350px; height: 786px;" src="https://bandcamp.com/EmbeddedPlayer/album=707130495/size=large/bgcol=333333/linkcol=e32c14/transparent=true/" seamless><a href="https://chits.bandcamp.com/album/kind-man">Kind Man by chits</a></iframe>
     </div>
 
     <button class="arrow prev">←</button>
@@ -205,7 +202,8 @@
                 current: 0
             },
             project3: {
-                images: ['image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.jpg', 'image5.jpg'],
+                music: true,
+                images: [],
                 current: 0
             }
         };
@@ -215,6 +213,10 @@
         const prevArrow = document.querySelector('.arrow.prev');
         const nextArrow = document.querySelector('.arrow.next');
         const counter = document.querySelector('.counter');
+
+        function renderBandcamp() {
+            container.innerHTML = `<iframe style="border: 0; width: 350px; height: 470px;" src="https://bandcamp.com/EmbeddedPlayer/album=707130495/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/" seamless><a href="https://chits.bandcamp.com/album/kind-man">Kind Man by chits</a></iframe>`
+        }
 
         function updateImage() {
             const project = projects[activeProject];
@@ -249,7 +251,12 @@
                 link.classList.add('active');
 
                 activeProject = projectId;
-                updateImage();
+                if (activeProject.music) {
+                    embedBandcamp();
+                }
+                else {
+                    updateImage();
+                }
             });
         });
 
