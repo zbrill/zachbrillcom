@@ -106,7 +106,6 @@
         .arrow {
             position: fixed;
             bottom: 5%;
-            /* transform: translateY(-50%); */
             background: none;
             border: none;
             font-size: 1rem;
@@ -166,17 +165,13 @@
 
     <div class="project-view active" id="project1">
         <div class="image-viewer">
-            <div class="image-container">
-                <div class="image-placeholder">Image 1 of 13</div>
-            </div>
+            <div class="image-container"></div>
         </div>
     </div>
 
     <div class="project-view" id="project2">
         <div class="image-viewer">
-            <div class="image-container">
-                <div class="image-placeholder">Image 1 of 4</div>
-            </div>
+            <div class="image-container"></div>
         </div>
     </div>
 
@@ -191,15 +186,17 @@
     <script>
         const projects = {
             project1: {
-                images: ['./img/sauvie/IMG_3886.jpg', './img/sauvie/IMG_3640.jpg', './img/sauvie/IMG_3897.jpg',  './img/sauvie/IMG_3860.jpg', './img/sauvie/IMG_3876.jpg',
+                images: ['./img/sauvie/IMG_3886.jpg', './img/sauvie/IMG_3640.jpg', './img/sauvie/IMG_3897.jpg', './img/sauvie/IMG_3860.jpg', './img/sauvie/IMG_3876.jpg',
                     './img/sauvie/IMG_3846.jpg', './img/sauvie/IMG_3746.jpg', './img/sauvie/IMG_3881.jpg', './img/sauvie/IMG_3211.jpg', './img/sauvie/IMG_3906.jpg',
                     './img/sauvie/IMG_3875.jpg', './img/sauvie/IMG_3892.jpg', './img/sauvie/IMG_3883.jpg', './img/sauvie/IMG_3334-2.jpg'
                 ],
-                current: 0
+                current: 0,
+                music: false
             },
             project2: {
                 images: ['./img/desert/IMG_3920.jpg', './img/desert/IMG_3927.jpg', './img/desert/IMG_3918.jpg', './img/desert/IMG_2538.jpg', './img/desert/IMG_2566.jpg', './img/desert/IMG_3964.jpg'],
-                current: 0
+                current: 0,
+                music: false
             },
             project3: {
                 music: true,
@@ -214,19 +211,26 @@
         const nextArrow = document.querySelector('.arrow.next');
         const counter = document.querySelector('.counter');
 
-        function renderBandcamp() {
-            container.innerHTML = `<iframe style="border: 0; width: 350px; height: 786px;" src="https://bandcamp.com/EmbeddedPlayer/album=707130495/size=large/bgcol=333333/linkcol=0f91ff/transparent=true/" seamless><a href="https://chits.bandcamp.com/album/kind-man">Kind Man by chits</a></iframe>`
-        }
-
-        function updateImage() {
+        function updateUI() {
             const project = projects[activeProject];
-            const container = document.querySelector(`#${activeProject} .image-container`);
 
-            container.innerHTML = `<img src="${project.images[project.current]}" alt="Image ${project.current + 1}">`;
-            counter.textContent = `${project.current + 1} / ${project.images.length}`;
+            if (project.music) {
+                // Hide arrows and counter for music page
+                prevArrow.style.display = 'none';
+                nextArrow.style.display = 'none';
+                counter.textContent = '';
+            } else {
+                // Show arrows and counter for image projects
+                prevArrow.style.display = '';
+                nextArrow.style.display = '';
 
-            prevArrow.disabled = project.current === 0;
-            nextArrow.disabled = project.current === project.images.length - 1;
+                const container = document.querySelector(`#${activeProject} .image-container`);
+                container.innerHTML = `<img src="${project.images[project.current]}" alt="Image ${project.current + 1}">`;
+                counter.textContent = `${project.current + 1} / ${project.images.length}`;
+
+                prevArrow.disabled = project.current === 0;
+                nextArrow.disabled = project.current === project.images.length - 1;
+            }
         }
 
         function navigate(direction) {
@@ -236,7 +240,7 @@
             } else if (direction === 'prev' && project.current > 0) {
                 project.current--;
             }
-            updateImage();
+            updateUI();
         }
 
         document.querySelectorAll('.project-link').forEach(link => {
@@ -251,12 +255,7 @@
                 link.classList.add('active');
 
                 activeProject = projectId;
-                if (activeProject.music) {
-                    renderBandcamp();
-                }
-                else {
-                    updateImage();
-                }
+                updateUI();
             });
         });
 
@@ -268,33 +267,7 @@
             else if (e.key === 'ArrowLeft') navigate('prev');
         });
 
-        // // Swipe gestures for mobile
-        // let touchStartX = 0;
-        // let touchEndX = 0;
-
-        // document.addEventListener('touchstart', (e) => {
-        //     touchStartX = e.changedTouches[0].screenX;
-        // });
-
-        // document.addEventListener('touchend', (e) => {
-        //     touchEndX = e.changedTouches[0].screenX;
-        //     handleSwipe();
-        // });
-
-        // function handleSwipe() {
-        //     const swipeThreshold = 50;
-        //     const diff = touchStartX - touchEndX;
-
-        //     if (Math.abs(diff) > swipeThreshold) {
-        //         if (diff > 0) {
-        //             navigate('next');
-        //         } else {
-        //             navigate('prev');
-        //         }
-        //     }
-        // }
-
-        updateImage();
+        updateUI();
     </script>
 </body>
 </html>
