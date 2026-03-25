@@ -175,9 +175,7 @@
         </div>
     </div>
 
-    <div class="project-view" id="project3">
-        <iframe style="border: 0; width: 350px; height: 786px;" src="https://bandcamp.com/EmbeddedPlayer/album=707130495/size=large/bgcol=ffffff/linkcol=0687f5/transparent=true/" seamless><a href="https://chits.bandcamp.com/album/kind-man">Kind Man by chits</a></iframe>
-    </div>
+    <div class="project-view" id="project3"></div>
 
     <button class="arrow prev">←</button>
     <button class="arrow next">→</button>
@@ -215,11 +213,19 @@
             const project = projects[activeProject];
 
             if (project.music) {
-                // Hide arrows and counter for music page
                 prevArrow.style.display = 'none';
                 nextArrow.style.display = 'none';
                 counter.textContent = '';
-            } else {
+
+                const container = document.querySelector('#project3');
+                if (!container.querySelector('iframe')) {
+                    const iframe = document.createElement('iframe');
+                    iframe.style.cssText = 'border: 0; width: 350px; height: 786px;';
+                    iframe.src = 'https://bandcamp.com/EmbeddedPlayer/album=707130495/size=large/bgcol=ffffff/linkcol=0687f5/transparent=true/';
+                    iframe.setAttribute('seamless', '');
+                    container.appendChild(iframe);
+                    iframe.innerHTML = '<a href="https://chits.bandcamp.com/album/kind-man">Kind Man by chits</a>';
+                } else {
                 // Show arrows and counter for image projects
                 prevArrow.style.display = '';
                 nextArrow.style.display = '';
