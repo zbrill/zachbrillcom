@@ -325,10 +325,10 @@
 
                 container.innerHTML = `
                     <div class="demo-player">
-                        <img amplitude-song-info="cover_art_url" class="demo-art" />
+                    <img data-amplitude-song-info="cover_art_url" class="demo-art" />
                         <div class="demo-meta">
-                            <span class="demo-title" amplitude-song-info="name"></span>
-                            <span class="demo-artist" amplitude-song-info="artist"></span>
+                        <span class="demo-title" data-amplitude-song-info="name"></span>
+                        <span class="demo-artist" data-amplitude-song-info="artist"></span>
                         </div>
                         <input type="range" class="demo-progress amplitude-song-played-progress" amplitude-main-song-played-progress />
                         <div class="demo-controls">
