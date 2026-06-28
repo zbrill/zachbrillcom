@@ -190,7 +190,7 @@
 
         <script>
             const projects = {
-                project1: {
+                sauvie: {
                     images: [
                         "./img/sauvie/IMG_3886.jpg",
                         "./img/sauvie/IMG_3640.jpg",
@@ -210,7 +210,7 @@
                     current: 0,
                     music: false,
                 },
-                project2: {
+                desert: {
                     images: [
                         "./img/desert/IMG_3920.jpg",
                         "./img/desert/IMG_3927.jpg",
@@ -222,30 +222,18 @@
                     current: 0,
                     music: false,
                 },
-                project3: {
+                music: {
                     music: true,
                     images: [],
                     current: 0,
                 },
             };
 
-            let activeProject = "project1";
+            let activeProject = "sauvie";
 
             const prevArrow = document.querySelector(".arrow.prev");
             const nextArrow = document.querySelector(".arrow.next");
             const counter = document.querySelector(".counter");
-
-            // Create img elements once, upfront
-            Object.entries(projects).forEach(([id, project]) => {
-                if (!project.music) {
-                    const container = document.querySelector(
-                        `#${id} .image-container`,
-                    );
-                    const img = document.createElement("img");
-                    img.alt = "";
-                    container.appendChild(img);
-                }
-            });
 
             function updateUI() {
                 const project = projects[activeProject];
@@ -255,7 +243,7 @@
                     nextArrow.style.display = "none";
                     counter.textContent = "";
 
-                    const container = document.querySelector("#project3");
+                    const container = document.querySelector("#music");
                     if (!container.querySelector("iframe")) {
                         const iframe = document.createElement("iframe");
                         iframe.style.cssText =
@@ -268,7 +256,6 @@
                             '<a href="https://chits.bandcamp.com/album/kind-man">Kind Man by chits</a>';
                     }
                 } else {
-                    // Show arrows and counter for image projects
                     prevArrow.style.display = "";
                     nextArrow.style.display = "";
 
@@ -298,7 +285,6 @@
                 }
                 updateUI();
 
-                // Preload neighbors
                 const { images, current } = project;
                 [current - 1, current + 1].forEach((i) => {
                     if (images[i]) new Image().src = images[i];
@@ -306,7 +292,7 @@
             }
 
             function activateProject(projectId) {
-                if (!projects[projectId]) projectId = "project1"; // fallback
+                if (!projects[projectId]) projectId = "sauvie";
 
                 document
                     .querySelectorAll(".project-view")
@@ -343,7 +329,19 @@
                 else if (e.key === "ArrowLeft") navigate("prev");
             });
 
-            activateProject(location.hash.slice(1) || "project1");
+            // Init — pre-create img elements
+            Object.entries(projects).forEach(([id, project]) => {
+                if (!project.music) {
+                    const container = document.querySelector(
+                        `#${id} .image-container`,
+                    );
+                    const img = document.createElement("img");
+                    img.alt = "";
+                    container.appendChild(img);
+                }
+            });
+
+            activateProject(location.hash.slice(1) || "sauvie");
         </script>
     </body>
 </html>
