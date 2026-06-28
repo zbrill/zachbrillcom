@@ -402,9 +402,8 @@
                 const list = document.getElementById("demo-tracklist");
                 Amplitude.getSongs().forEach((song, i) => {
                     const row = document.createElement("div");
-                    row.className =
-                        "demo-track amplitude-song-container amplitude-play-pause";
-                    row.setAttribute("amplitude-song-index", i);
+                    row.className = "demo-track";
+                    row.setAttribute("data-amplitude-song-index", i);
                     row.innerHTML = `<span class="demo-track-num">${i + 1}</span><span class="demo-track-name">${song.name}</span>`;
                     list.appendChild(row);
                 });
