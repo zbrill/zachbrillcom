@@ -426,7 +426,16 @@
                     prevArrow.style.display = "none";
                     nextArrow.style.display = "none";
                     counter.textContent = "";
-                    initPlayer();
+
+                    if (typeof Amplitude === "undefined") {
+                        const script = document.createElement("script");
+                        script.src =
+                            "https://cdn.jsdelivr.net/npm/amplitudejs@5.3.2/dist/amplitude.js";
+                        script.onload = initPlayer;
+                        document.body.appendChild(script);
+                    } else {
+                        initPlayer();
+                    }
                 } else {
                     prevArrow.style.display = "";
                     nextArrow.style.display = "";
@@ -516,6 +525,5 @@
 
             activateProject(location.hash.slice(1) || "sauvie");
         </script>
-        <script src="https://cdn.jsdelivr.net/npm/amplitudejs@5.3.2/dist/amplitude.js"></script>
     </body>
 </html>
