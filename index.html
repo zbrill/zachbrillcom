@@ -235,6 +235,12 @@
                 font-size: 0.85rem;
                 color: #999;
             }
+            .demo-play.amplitude-paused::after {
+                content: "▶";
+            }
+            .demo-play.amplitude-playing::after {
+                content: "⏸";
+            }
         </style>
     </head>
     <body>
@@ -325,16 +331,16 @@
 
                 container.innerHTML = `
                     <div class="demo-player">
-                    <img data-amplitude-song-info="cover_art_url" class="demo-art" />
+                        <img data-amplitude-song-info="cover_art_url" class="demo-art" />
                         <div class="demo-meta">
-                        <span class="demo-title" data-amplitude-song-info="name"></span>
-                        <span class="demo-artist" data-amplitude-song-info="artist"></span>
+                            <span class="demo-title" data-amplitude-song-info="name"></span>
+                            <span class="demo-artist" data-amplitude-song-info="artist"></span>
                         </div>
-                        <input type="range" class="demo-progress" data-amplitude-main-song-played-progress />
+                        <input type="range" class="amplitude-song-played-progress demo-progress" />
                         <div class="demo-controls">
-                            <button data-amplitude-main-prev class="demo-btn">←</button>
-                            <button data-amplitude-main-play-pause class="demo-btn demo-play">▶</button>
-                            <button data-amplitude-main-next class="demo-btn">→</button>
+                            <button class="amplitude-prev demo-btn">←</button>
+                            <button class="amplitude-play-pause demo-btn demo-play"></button>
+                            <button class="amplitude-next demo-btn">→</button>
                         </div>
                         <div class="demo-tracklist" id="demo-tracklist"></div>
                     </div>
@@ -393,8 +399,10 @@
                         },
                     ],
                     callbacks: {
-                        initialized: buildTracklist,
-                    },
+                        initialized: () => {
+                            buildTracklist();
+                            Amplitude.bindNewElements();
+                        },
                 });
             }
 
@@ -402,7 +410,8 @@
                 const list = document.getElementById("demo-tracklist");
                 Amplitude.getSongs().forEach((song, i) => {
                     const row = document.createElement("div");
-                    row.className = "demo-track";
+                    row.className =
+                        "amplitude-song-container amplitude-play-pause demo-track";
                     row.setAttribute("data-amplitude-song-index", i);
                     row.innerHTML = `<span class="demo-track-num">${i + 1}</span><span class="demo-track-name">${song.name}</span>`;
                     list.appendChild(row);
