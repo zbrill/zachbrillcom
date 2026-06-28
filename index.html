@@ -308,8 +308,6 @@
                 },
                 music: {
                     type: "music",
-                    images: [],
-                    current: 0,
                 },
                 demo: { type: "player" },
             };
@@ -506,7 +504,7 @@
 
             // Init — pre-create img elements
             Object.entries(projects).forEach(([id, project]) => {
-                if (!project.music) {
+                if (project.type === "images") {
                     const container = document.querySelector(
                         `#${id} .image-container`,
                     );
