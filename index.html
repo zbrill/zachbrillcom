@@ -154,6 +154,87 @@
                     font-size: 0.7rem;
                 }
             }
+
+            .demo-player {
+                max-width: 340px;
+                padding-top: 1rem;
+            }
+
+            .demo-art {
+                width: 100%;
+                aspect-ratio: 1;
+                object-fit: cover;
+                display: block;
+                margin-bottom: 1rem;
+            }
+
+            .demo-meta {
+                margin-bottom: 0.75rem;
+            }
+
+            .demo-title {
+                display: block;
+                font-size: 0.9rem;
+                color: #333;
+            }
+
+            .demo-artist {
+                display: block;
+                font-size: 0.8rem;
+                color: #999;
+                margin-top: 2px;
+            }
+
+            .demo-progress {
+                width: 100%;
+                margin-bottom: 1rem;
+                accent-color: #333;
+            }
+
+            .demo-controls {
+                display: flex;
+                gap: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .demo-btn {
+                background: none;
+                border: none;
+                font-size: 1rem;
+                cursor: pointer;
+                padding: 0;
+                color: #333;
+            }
+
+            .demo-tracklist {
+                border-top: 1px solid #eee;
+                padding-top: 0.5rem;
+            }
+
+            .demo-track {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                padding: 0.5rem 0;
+                cursor: pointer;
+                border-bottom: 1px solid #f5f5f5;
+            }
+
+            .demo-track.amplitude-active-song-container .demo-track-name {
+                color: #000;
+            }
+
+            .demo-track-num {
+                font-size: 0.75rem;
+                color: #ccc;
+                width: 1rem;
+                text-align: right;
+            }
+
+            .demo-track-name {
+                font-size: 0.85rem;
+                color: #999;
+            }
         </style>
     </head>
     <body>
@@ -183,6 +264,7 @@
         </div>
 
         <div class="project-view" id="music"></div>
+        <div class="project-view" id="demo"></div>
 
         <button class="arrow prev">←</button>
         <button class="arrow next">→</button>
@@ -191,6 +273,7 @@
         <script>
             const projects = {
                 sauvie: {
+                    type: "images",
                     images: [
                         "./img/sauvie/IMG_3886.jpg",
                         "./img/sauvie/IMG_3640.jpg",
@@ -211,6 +294,7 @@
                     music: false,
                 },
                 desert: {
+                    type: "images",
                     images: [
                         "./img/desert/IMG_3920.jpg",
                         "./img/desert/IMG_3927.jpg",
@@ -223,10 +307,11 @@
                     music: false,
                 },
                 music: {
-                    music: true,
+                    type: "music",
                     images: [],
                     current: 0,
                 },
+                demo: { type: "player" },
             };
 
             let activeProject = "sauvie";
@@ -235,14 +320,98 @@
             const nextArrow = document.querySelector(".arrow.next");
             const counter = document.querySelector(".counter");
 
+            function initPlayer() {
+                const container = document.querySelector("#demo");
+                if (container.dataset.initialized) return;
+                container.dataset.initialized = true;
+
+                container.innerHTML = `
+                    <div class="demo-player">
+                        <img amplitude-song-info="cover_art_url" class="demo-art" />
+                        <div class="demo-meta">
+                            <span class="demo-title" amplitude-song-info="name"></span>
+                            <span class="demo-artist" amplitude-song-info="artist"></span>
+                        </div>
+                        <input type="range" class="demo-progress amplitude-song-played-progress" amplitude-main-song-played-progress />
+                        <div class="demo-controls">
+                            <button amplitude-main-prev class="demo-btn">←</button>
+                            <button amplitude-main-play-pause class="demo-btn demo-play">▶</button>
+                            <button amplitude-main-next class="demo-btn">→</button>
+                        </div>
+                        <div class="demo-tracklist" id="demo-tracklist"></div>
+                    </div>
+                `;
+
+                Amplitude.init({
+                    songs: [
+                        {
+                            name: "1",
+                            artist: "chits",
+                            url: "./music/demo/91_2.mp3",
+                            cover_art_url: "./img/demo-cover.jpg",
+                        },
+                        {
+                            name: "2",
+                            artist: "chits",
+                            url: "./music/demo/157_1.mp3",
+                            cover_art_url: "./img/demo-cover.jpg",
+                        },
+                        {
+                            name: "3",
+                            artist: "chits",
+                            url: "./music/demo/134_5.mp3",
+                            cover_art_url: "./img/demo-cover.jpg",
+                        },
+                        {
+                            name: "is now so bad",
+                            artist: "chits",
+                            url: "./music/demo/148_demo.mp3",
+                            cover_art_url: "./img/demo-cover.jpg",
+                        },
+                        {
+                            name: "5",
+                            artist: "chits",
+                            url: "./music/demo/136_3.mp3",
+                            cover_art_url: "./img/demo-cover.jpg",
+                        },
+                        {
+                            name: "6",
+                            artist: "chits",
+                            url: "./music/demo/151_2.mp3",
+                            cover_art_url: "./img/demo-cover.jpg",
+                        },
+                        {
+                            name: "no",
+                            artist: "chits",
+                            url: "./music/demo/3726.mp3",
+                            cover_art_url: "./img/demo-cover.jpg",
+                        },
+                    ],
+                    callbacks: {
+                        initialized: buildTracklist,
+                    },
+                });
+            }
+
+            function buildTracklist() {
+                const list = document.getElementById("demo-tracklist");
+                Amplitude.getSongs().forEach((song, i) => {
+                    const row = document.createElement("div");
+                    row.className =
+                        "demo-track amplitude-song-container amplitude-play-pause";
+                    row.setAttribute("amplitude-song-index", i);
+                    row.innerHTML = `<span class="demo-track-num">${i + 1}</span><span class="demo-track-name">${song.name}</span>`;
+                    list.appendChild(row);
+                });
+            }
+
             function updateUI() {
                 const project = projects[activeProject];
 
-                if (project.music) {
+                if (project.type === "music") {
                     prevArrow.style.display = "none";
                     nextArrow.style.display = "none";
                     counter.textContent = "";
-
                     const container = document.querySelector("#music");
                     if (!container.querySelector("iframe")) {
                         const iframe = document.createElement("iframe");
@@ -255,10 +424,14 @@
                         iframe.innerHTML =
                             '<a href="https://chits.bandcamp.com/album/kind-man">Kind Man by chits</a>';
                     }
+                } else if (project.type === "player") {
+                    prevArrow.style.display = "none";
+                    nextArrow.style.display = "none";
+                    counter.textContent = "";
+                    initPlayer();
                 } else {
                     prevArrow.style.display = "";
                     nextArrow.style.display = "";
-
                     const container = document.querySelector(
                         `#${activeProject} .image-container`,
                     );
@@ -266,7 +439,6 @@
                     img.src = project.images[project.current];
                     img.alt = `Image ${project.current + 1}`;
                     counter.textContent = `${project.current + 1} / ${project.images.length}`;
-
                     prevArrow.disabled = project.current === 0;
                     nextArrow.disabled =
                         project.current === project.images.length - 1;
@@ -343,5 +515,6 @@
 
             activateProject(location.hash.slice(1) || "sauvie");
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/amplitudejs@5.3.2/dist/amplitude.js"></script>
     </body>
 </html>
