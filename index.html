@@ -348,37 +348,37 @@
                             name: "1",
                             artist: "chits",
                             url: "./music/demo/91_2.mp3",
-                            cover_art_url: "./img/demo-cover.jpg",
+                            cover_art_url: "./img/demo-cover.png",
                         },
                         {
                             name: "2",
                             artist: "chits",
                             url: "./music/demo/157_1.mp3",
-                            cover_art_url: "./img/demo-cover.jpg",
+                            cover_art_url: "./img/demo-cover.png",
                         },
                         {
                             name: "3",
                             artist: "chits",
                             url: "./music/demo/134_5.mp3",
-                            cover_art_url: "./img/demo-cover.jpg",
+                            cover_art_url: "./img/demo-cover.png",
                         },
                         {
                             name: "is now so bad",
                             artist: "chits",
                             url: "./music/demo/148_demo.mp3",
-                            cover_art_url: "./img/demo-cover.jpg",
+                            cover_art_url: "./img/demo-cover.png",
                         },
                         {
                             name: "5",
                             artist: "chits",
                             url: "./music/demo/136_3.mp3",
-                            cover_art_url: "./img/demo-cover.jpg",
+                            cover_art_url: "./img/demo-cover.png",
                         },
                         {
                             name: "6",
                             artist: "chits",
                             url: "./music/demo/151_2.mp3",
-                            cover_art_url: "./img/demo-cover.jpg",
+                            cover_art_url: "./img/demo-cover.png",
                         },
                         {
                             name: "no",
@@ -474,9 +474,12 @@
                     .forEach((l) => l.classList.remove("active"));
 
                 document.getElementById(projectId).classList.add("active");
-                document
-                    .querySelector(`[data-project="${projectId}"]`)
-                    .classList.add("active");
+
+                // only query the nav link if it exists (demo has none)
+                const navLink = document.querySelector(
+                    `[data-project="${projectId}"]`,
+                );
+                if (navLink) navLink.classList.add("active");
 
                 activeProject = projectId;
                 updateUI();
