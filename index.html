@@ -305,23 +305,33 @@
                 });
             }
 
+            function activateProject(projectId) {
+                if (!projects[projectId]) projectId = "project1"; // fallback
+
+                document
+                    .querySelectorAll(".project-view")
+                    .forEach((p) => p.classList.remove("active"));
+                document
+                    .querySelectorAll(".project-link")
+                    .forEach((l) => l.classList.remove("active"));
+
+                document.getElementById(projectId).classList.add("active");
+                document
+                    .querySelector(`[data-project="${projectId}"]`)
+                    .classList.add("active");
+
+                activeProject = projectId;
+                updateUI();
+            }
+
+            window.addEventListener("hashchange", () => {
+                activateProject(location.hash.slice(1));
+            });
+
             document.querySelectorAll(".project-link").forEach((link) => {
                 link.addEventListener("click", (e) => {
                     e.preventDefault();
-                    const projectId = link.dataset.project;
-
-                    document
-                        .querySelectorAll(".project-view")
-                        .forEach((p) => p.classList.remove("active"));
-                    document
-                        .querySelectorAll(".project-link")
-                        .forEach((l) => l.classList.remove("active"));
-
-                    document.getElementById(projectId).classList.add("active");
-                    link.classList.add("active");
-
-                    activeProject = projectId;
-                    updateUI();
+                    location.hash = link.dataset.project;
                 });
             });
 
@@ -333,7 +343,7 @@
                 else if (e.key === "ArrowLeft") navigate("prev");
             });
 
-            updateUI();
+            activateProject(location.hash.slice(1) || "project1");
         </script>
     </body>
 </html>
