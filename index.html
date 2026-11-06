@@ -403,62 +403,45 @@
                             buildTracklist();
                             Amplitude.bindNewElements();
                         },
+                        "song_change": function() {
+                                    if ('mediaSession' in navigator) {
+                                        let activeSong = Amplitude.getActiveSongMetadata();
+                                        navigator.mediaSession.metadata = new MediaMetadata({
+                                            title: activeSong.name || 'Unknown Title',
+                                            artist: activeSong.artist || 'Unknown Artist',
+                                            album: activeSong.album || '',
+                                            artwork: [
+                                                { src: activeSong.cover_art_url || '', sizes: '512x512', type: 'image/jpeg' }
+                                            ]
+                                        });
+                                    }
+                                },
+
+                                // NEW: Tell macOS the music is playing
+                                "play": function() {
+                                    if ('mediaSession' in navigator) {
+                                        navigator.mediaSession.playbackState = "playing";
+                                    }
+                                },
+
+                                // NEW: Tell macOS the music is paused
+                                "pause": function() {
+                                    if ('mediaSession' in navigator) {
+                                        navigator.mediaSession.playbackState = "paused";
+                                    }
+                                }
+                            }
+                        });
+
+                        // NEW: Hook the hardware keys/AirPods gestures globally right after initialization
+                        if ('mediaSession' in navigator) {
+                            navigator.mediaSession.setActionHandler('play', () => { Amplitude.play(); });
+                            navigator.mediaSession.setActionHandler('pause', () => { Amplitude.pause(); });
+                            navigator.mediaSession.setActionHandler('nexttrack', () => { Amplitude.next(); });
+                            navigator.mediaSession.setActionHandler('previoustrack', () => { Amplitude.prev(); });
+                        }
                     },
                 });
-
-
-                // 1. Initialize AmplitudeJS normally
-                Amplitude.init({
-                    "songs": [
-                        // Your single playlist array
-                    ]
-                });
-
-                // 2. Core macOS & AirPods Integration
-                if ('mediaSession' in navigator) {
-
-                    // Sync native Mac metadata when a song changes
-                    Amplitude.bind('song_change', function() {
-                        let activeSong = Amplitude.getActiveSongMetadata();
-
-                        navigator.mediaSession.metadata = new MediaMetadata({
-                            title: activeSong.name || 'Unknown Title',
-                            artist: activeSong.artist || 'Unknown Artist',
-                            album: activeSong.album || '',
-                            artwork: [
-                                { src: activeSong.cover_art_url || '', sizes: '512x512', type: 'image/jpeg' }
-                            ]
-                        });
-                    });
-
-                    // Sync play/pause states so macOS updates its system UI
-                    Amplitude.bind('play', function() {
-                        navigator.mediaSession.playbackState = "playing";
-                    });
-
-                    Amplitude.bind('pause', function() {
-                        navigator.mediaSession.playbackState = "paused";
-                    });
-
-                    // Hardware Actions
-                    navigator.mediaSession.setActionHandler('play', () => {
-                        Amplitude.play();
-                    });
-
-                    navigator.mediaSession.setActionHandler('pause', () => {
-                        Amplitude.pause();
-                    });
-
-                    // Next Track (Mac Media Key / AirPods Double-Tap)
-                    navigator.mediaSession.setActionHandler('nexttrack', () => {
-                        Amplitude.next(); // Native Amplitude global next method
-                    });
-
-                    // Previous Track (Mac Media Key / AirPods Triple-Tap)
-                    navigator.mediaSession.setActionHandler('previoustrack', () => {
-                        Amplitude.prev(); // Native Amplitude global previous method
-                    });
-                }
 
             }
 
