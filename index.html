@@ -405,6 +405,52 @@
                         },
                     },
                 });
+
+
+                // 2. Sync Native macOS/AirPods Actions with AmplitudeJS
+                if ('mediaSession' in navigator) {
+
+                    // Update the native Mac "Now Playing" overlay when the song changes
+                    Amplitude.bind('song_change', function() {
+                        let activeSong = Amplitude.getActiveSongMetadata();
+
+                        navigator.mediaSession.metadata = new MediaMetadata({
+                            title: activeSong.name,
+                            artist: activeSong.artist,
+                            artwork: [
+                                { src: activeSong.cover_art_url || '', sizes: '512x512', type: 'image/jpeg' }
+                            ]
+                        });
+                    });
+
+                    // Handle macOS Play Key / AirPods Single-Tap
+                    navigator.mediaSession.setActionHandler('play', () => {
+                        Amplitude.play();
+                    });
+
+                    // Handle macOS Pause Key / AirPods Single-Tap
+                    navigator.mediaSession.setActionHandler('pause', () => {
+                        Amplitude.pause();
+                    });
+
+                    // Handle macOS Next Key / AirPods Double-Tap (Forward Track)
+                    navigator.mediaSession.setActionHandler('nexttrack', () => {
+                        // AmplitudeJS global next song method
+                        let nextIndex = Amplitude.getActiveIndex() + 1;
+                        if (nextIndex < Amplitude.getSongs().length) {
+                            Amplitude.playSongAtIndex(nextIndex);
+                        }
+                    });
+
+                    // Handle macOS Previous Key / AirPods Triple-Tap (Previous Track)
+                    navigator.mediaSession.setActionHandler('previoustrack', () => {
+                        let prevIndex = Amplitude.getActiveIndex() - 1;
+                        if (prevIndex >= 0) {
+                            Amplitude.playSongAtIndex(prevIndex);
+                        }
+                    });
+                }
+
             }
 
             function buildTracklist() {
