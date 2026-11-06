@@ -297,7 +297,6 @@
                         "./img/sauvie/IMG_3334-2.jpg",
                     ],
                     current: 0,
-                    music: false,
                 },
                 desert: {
                     type: "images",
@@ -310,13 +309,22 @@
                         "./img/desert/IMG_3964.jpg",
                     ],
                     current: 0,
-                    music: false,
                 },
-                music: {
-                    type: "music",
-                },
+                music: { type: "music" },
                 demo: { type: "player" },
             };
+
+            const COVER = "./img/4_VaguelyCenterLabel.jpg";
+            const demoSongs = [
+                { name: "werkman", url: "./music/demo/91_4.mp3" },
+                { name: "smoke 04/04", url: "./music/demo/157_4.mp3" },
+                { name: "renesis", url: "./music/demo/134_6.mp3" },
+                { name: "luck leaked out", url: "./music/demo/151_5_overstayer.mp3" },
+                { name: "is now so bad", url: "./music/demo/148_5.mp3" },
+                { name: "faith/clearstar", url: "./music/demo/136_7.mp3" },
+                { name: "piston", url: "./music/demo/90_3.mp3" },
+                { name: "no", url: "./music/demo/3726.mp3" },
+            ].map((s) => ({ ...s, artist: "chits", cover_art_url: COVER }));
 
             let activeProject = "sauvie";
 
@@ -348,109 +356,53 @@
 
                 Amplitude.init({
                     volume: 100,
-                    songs: [
-                        {
-                            name: "werkman",
-                            artist: "chits",
-                            url: "https://zachbrill.com/music/demo/91_4.mp3",
-                            cover_art_url: "https://zachbrill.com/img/4_VaguelyCenterLabel.jpg",
-                        },
-                        {
-                            name: "smoke 04/04",
-                            artist: "chits",
-                            url: "https://zachbrill.com/music/demo/157_4.mp3",
-                            cover_art_url: "https://zachbrill.com/img/4_VaguelyCenterLabel.jpg",
-                        },
-                        {
-                            name: "renesis",
-                            artist: "chits",
-                            url: "https://zachbrill.com/music/demo/134_6.mp3",
-                            cover_art_url: "https://zachbrill.com/img/4_VaguelyCenterLabel.jpg",
-                        },
-                        {
-                            name: "luck leaked out",
-                            artist: "chits",
-                            url: "https://zachbrill.com/music/demo/151_5_overstayer.mp3",
-                            cover_art_url: "https://zachbrill.com/img/4_VaguelyCenterLabel.jpg",
-                        },
-                        {
-                            name: "is now so bad",
-                            artist: "chits",
-                            url: "https://zachbrill.com/music/demo/148_5.mp3",
-                            cover_art_url: "https://zachbrill.com/img/4_VaguelyCenterLabel.jpg",
-                        },
-                        {
-                            name: "faith/clearstar",
-                            artist: "chits",
-                            url: "https://zachbrill.com/music/demo/136_7.mp3",
-                            cover_art_url: "https://zachbrill.com/img/4_VaguelyCenterLabel.jpg",
-                        },
-                        {
-                            name: "piston",
-                            artist: "chits",
-                            url: "https://zachbrill.com/music/demo/90_3.mp3",
-                            cover_art_url: "https://zachbrill.com/img/4_VaguelyCenterLabel.jpg",
-                        },
-                        {
-                            name: "no",
-                            artist: "chits",
-                            url: "https://zachbrill.com/music/demo/3726.mp3",
-                            cover_art_url: "https://zachbrill.com/img/4_VaguelyCenterLabel.jpg",
-                        },
-                    ],
+                    songs: demoSongs,
                     callbacks: {
                         initialized: () => {
                             buildTracklist();
                             Amplitude.bindNewElements();
                         },
-                        "song_change": function() {
-                                    if ('mediaSession' in navigator) {
-                                        let activeSong = Amplitude.getActiveSongMetadata();
-                                        navigator.mediaSession.metadata = new MediaMetadata({
-                                            title: activeSong.name || 'Unknown Title',
-                                            artist: activeSong.artist || 'Unknown Artist',
-                                            album: activeSong.album || '',
-                                            artwork: [
-                                                { src: activeSong.cover_art_url || '', sizes: '512x512', type: 'image/jpeg' }
-                                            ]
-                                        });
-                                    }
-                                },
-
-
-                                "play": function() {
-                                    if ('mediaSession' in navigator) {
-                                        navigator.mediaSession.playbackState = "playing";
-                                    }
-                                },
-
-                                // NEW: Tell macOS the music is paused
-                                "pause": function() {
-                                    if ('mediaSession' in navigator) {
-                                        navigator.mediaSession.playbackState = "paused";
-                                    }
-                                }
-                            }
-                        });
-
-                        // NEW: Hook the hardware keys/AirPods gestures globally right after initialization
-                        if ('mediaSession' in navigator) {
-                            navigator.mediaSession.setActionHandler('play', () => { Amplitude.play(); });
-                            navigator.mediaSession.setActionHandler('pause', () => { Amplitude.pause(); });
-                            navigator.mediaSession.setActionHandler('nexttrack', () => { Amplitude.next(); });
-                            navigator.mediaSession.setActionHandler('previoustrack', () => { Amplitude.prev(); });
-                        }
-                    }
+                        song_change: () => {
+                            if (!("mediaSession" in navigator)) return;
+                            const song = Amplitude.getActiveSongMetadata();
+                            navigator.mediaSession.metadata = new MediaMetadata({
+                                title: song.name || "Unknown Title",
+                                artist: song.artist || "Unknown Artist",
+                                album: song.album || "",
+                                artwork: [
+                                    {
+                                        src: song.cover_art_url || "",
+                                        sizes: "512x512",
+                                        type: "image/jpeg",
+                                    },
+                                ],
+                            });
+                        },
+                        play: () => {
+                            if ("mediaSession" in navigator)
+                                navigator.mediaSession.playbackState = "playing";
+                        },
+                        pause: () => {
+                            if ("mediaSession" in navigator)
+                                navigator.mediaSession.playbackState = "paused";
+                        },
+                    },
                 });
 
+                // Hardware keys / AirPods gestures
+                if ("mediaSession" in navigator) {
+                    navigator.mediaSession.setActionHandler("play", () => Amplitude.play());
+                    navigator.mediaSession.setActionHandler("pause", () => Amplitude.pause());
+                    navigator.mediaSession.setActionHandler("nexttrack", () => Amplitude.next());
+                    navigator.mediaSession.setActionHandler("previoustrack", () => Amplitude.prev());
+                }
             }
 
             function buildTracklist() {
                 const list = document.getElementById("demo-tracklist");
                 Amplitude.getSongs().forEach((song, i) => {
                     const row = document.createElement("div");
-                    row.className =
-                        "amplitude-song-container amplitude-play-pause demo-track";
+                    row.className = "amplitude-song-container amplitude-play-pause demo-track";
                     row.setAttribute("data-amplitude-song-index", i);
                     row.innerHTML = `<span class="demo-track-num">${i + 1}</span><span class="demo-track-name">${song.name}</span>`;
                     list.appendChild(row);
@@ -467,14 +419,11 @@
                     const container = document.querySelector("#music");
                     if (!container.querySelector("iframe")) {
                         const iframe = document.createElement("iframe");
-                        iframe.style.cssText =
-                            "border: 0; width: 350px; height: 786px;";
+                        iframe.style.cssText = "border: 0; width: 350px; height: 786px;";
                         iframe.src =
                             "https://bandcamp.com/EmbeddedPlayer/album=707130495/size=large/bgcol=ffffff/linkcol=0687f5/transparent=true/";
                         iframe.setAttribute("seamless", "");
                         container.appendChild(iframe);
-                        iframe.innerHTML =
-                            '<a href="https://chits.bandcamp.com/album/kind-man">Kind Man by chits</a>';
                     }
                 } else if (project.type === "player") {
                     prevArrow.style.display = "none";
@@ -493,25 +442,21 @@
                 } else {
                     prevArrow.style.display = "";
                     nextArrow.style.display = "";
-                    const container = document.querySelector(
-                        `#${activeProject} .image-container`,
-                    );
+                    const container = document.querySelector(`#${activeProject} .image-container`);
                     const img = container.querySelector("img");
                     img.src = project.images[project.current];
                     img.alt = `Image ${project.current + 1}`;
                     counter.textContent = `${project.current + 1} / ${project.images.length}`;
                     prevArrow.disabled = project.current === 0;
-                    nextArrow.disabled =
-                        project.current === project.images.length - 1;
+                    nextArrow.disabled = project.current === project.images.length - 1;
                 }
             }
 
             function navigate(direction) {
                 const project = projects[activeProject];
-                if (
-                    direction === "next" &&
-                    project.current < project.images.length - 1
-                ) {
+                if (project.type !== "images") return; // guard: music/demo have no images
+
+                if (direction === "next" && project.current < project.images.length - 1) {
                     project.current++;
                 } else if (direction === "prev" && project.current > 0) {
                     project.current--;
@@ -527,19 +472,13 @@
             function activateProject(projectId) {
                 if (!projects[projectId]) projectId = "sauvie";
 
-                document
-                    .querySelectorAll(".project-view")
-                    .forEach((p) => p.classList.remove("active"));
-                document
-                    .querySelectorAll(".project-link")
-                    .forEach((l) => l.classList.remove("active"));
+                document.querySelectorAll(".project-view").forEach((p) => p.classList.remove("active"));
+                document.querySelectorAll(".project-link").forEach((l) => l.classList.remove("active"));
 
                 document.getElementById(projectId).classList.add("active");
 
-                // only query the nav link if it exists (demo has none)
-                const navLink = document.querySelector(
-                    `[data-project="${projectId}"]`,
-                );
+                // demo has no nav link
+                const navLink = document.querySelector(`[data-project="${projectId}"]`);
                 if (navLink) navLink.classList.add("active");
 
                 activeProject = projectId;
@@ -565,12 +504,10 @@
                 else if (e.key === "ArrowLeft") navigate("prev");
             });
 
-            // Init — pre-create img elements
+            // Pre-create img elements for image projects
             Object.entries(projects).forEach(([id, project]) => {
                 if (project.type === "images") {
-                    const container = document.querySelector(
-                        `#${id} .image-container`,
-                    );
+                    const container = document.querySelector(`#${id} .image-container`);
                     const img = document.createElement("img");
                     img.alt = "";
                     container.appendChild(img);
