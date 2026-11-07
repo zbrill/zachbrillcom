@@ -503,7 +503,7 @@
                 else if (e.key === "ArrowLeft") navigate("prev");
             });
 
-            // Pre-create img elements for image projects
+
             Object.entries(projects).forEach(([id, project]) => {
                 if (project.type === "images") {
                     const container = document.querySelector(`#${id} .image-container`);
