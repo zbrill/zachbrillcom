@@ -389,7 +389,6 @@
                     },
                 });
 
-                // Hardware keys / AirPods gestures
                 if ("mediaSession" in navigator) {
                     navigator.mediaSession.setActionHandler("play", () => Amplitude.play());
                     navigator.mediaSession.setActionHandler("pause", () => Amplitude.pause());
